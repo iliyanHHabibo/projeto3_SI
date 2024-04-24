@@ -30,7 +30,7 @@ def CSP_numberlink(puzzle):
     width = len(puzzle[0])
     domain = {}
     numbers = set()
-
+    # Dominio
     # Inicializar domínios e identificar números
     for i in range(height):
         for j in range(width):
@@ -99,54 +99,58 @@ def CSP_numberlink(puzzle):
                     if puzzle[i][j+1] == '.':
                         domain[var] += [('e', num)]
 
-    return domain
+    #variaveis
+    variaveis = domain.keys()
+    #neighbors
+    
+    def get_grid_dimensions(grid):
+        """Return the dimensions of the grid as a tuple (number of rows, number of columns)."""
+        if not grid:  # Check if the grid is empty
+            return (0, 0)
+        number_of_rows = len(grid)
+        number_of_columns = len(grid[0]) if grid[0] else 0  # Check the first row for number of columns
+        return (number_of_rows, number_of_columns)
 
-domain = CSP_numberlink(puzzle)
-for key, value in sorted(domain.items()):
-    print(f'{key}: {value}')
+    def setup_neighbors(n, m):
+        """Setup neighbors for a Numberlink puzzle grid of size n x m using V_row_col format for variables."""
+        neighbors = {}
+        for row in range(n):
+            for col in range(m):
+                # Define neighbors as a list of variable names in V_row_col format
+                adjacent = []
+                # Check each direction and add if within bounds, using formatted names
+                if row > 0:  # Up
+                    adjacent.append(f"V_{row - 1}_{col}")
+                if row < n - 1:  # Down
+                    adjacent.append(f"V_{row + 1}_{col}")
+                if col > 0:  # Left
+                    adjacent.append(f"V_{row}_{col - 1}")
+                if col < m - 1:  # Right
+                    adjacent.append(f"V_{row}_{col + 1}")
+                # Assign the list of neighbors to the cell variable in the dictionary
+                neighbors[f"V_{row}_{col}"] = adjacent
+        return neighbors
+    def format_neighbors_to_string(neighbors):
+        """Format the neighbors dictionary into a string with the format 'A: B C D; B: C D; etc.'"""
+        formatted_string = ""
+        for key, values in neighbors.items():
+            # Join the list of neighbors into a string separated by spaces
+            neighbors_string = ' '.join(values)
+            # Append the current key and its neighbors to the formatted string
+            formatted_string += f"{key}: {neighbors_string}; "
+        return formatted_string.strip()  # Remove the trailing space
+    grid_dimension=get_grid_dimensions(puzzle)
+    print(format_neighbors_to_string(setup_neighbors(grid_dimension[0],grid_dimension[1])))
+    
+    
+    
+    
 
-# Output esperado conforme fornecido
-expected_output = {
-    "V_0_0": [('se', 1), ('se', 2), ('se', 3)],
-    "V_0_1": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('se', 1), ('se', 2), ('se', 3)],
-    "V_0_2": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('se', 1), ('se', 2), ('se', 3)],
-    "V_0_3": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('se', 1), ('se', 2), ('se', 3)],
-    "V_0_4": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('se', 1), ('se', 2), ('se', 3)],
-    "V_0_5": [('n', 2)],
-    "V_1_0": [('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_1_1": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_1_2": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_1_3": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_1_4": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_1_5": [('n', 1)],
-    "V_2_0": [('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_2_1": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_2_2": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_2_3": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_2_4": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_2_5": [('e', 3), ('n', 3)],
-    "V_3_0": [('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_3_1": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_3_2": [('e', 3), ('n', 3), ('s', 3), ('w', 3)],
-    "V_3_3": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_3_4": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_3_5": [('ne', 1), ('ne', 2), ('ne', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_4_0": [('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_4_1": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_4_2": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_4_3": [('ne', 1), ('ne', 2), ('ne', 3), ('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('se', 1), ('se', 2), ('se', 3), ('sw', 1), ('sw', 2), ('sw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_4_4": [('e', 2), ('n', 2), ('s', 2), ('w', 2)],
-    "V_4_5": [('ne', 1), ('ne', 2), ('ne', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('we', 1), ('we', 2), ('we', 3)],
-    "V_5_0": [('sw', 1), ('sw', 2), ('sw', 3)],
-    "V_5_1": [('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('sw', 1), ('sw', 2), ('sw', 3)],
-    "V_5_2": [('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('sw', 1), ('sw', 2), ('sw', 3)],
-    "V_5_3": [('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('sw', 1), ('sw', 2), ('sw', 3)],
-    "V_5_4": [('ns', 1), ('ns', 2), ('ns', 3), ('nw', 1), ('nw', 2), ('nw', 3), ('sw', 1), ('sw', 2), ('sw', 3)],
-    "V_5_5": [('n', 1), ('w', 1)]
-}
+#neighbours 
 
+
+        
+    
 # Gere o domínio a partir do código CSP_numberlink
 domain = CSP_numberlink(puzzle)
-
-
 
